@@ -36,7 +36,7 @@ function Work() {
   }
 
   return (
-    <section id="work" className="section">
+    <section id="work" className={`section ${styles.work}`}>
       <div className="container" ref={revealRef}>
         <h2 className="section__title scroll-reveal">My Projects</h2>
         <p className="section__subtitle scroll-reveal">

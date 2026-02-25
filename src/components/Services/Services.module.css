@@ -1,5 +1,5 @@
 .services {
-  background: linear-gradient(180deg, var(--color-bg-alt) 0%, #0a1120 100%);
+  background: var(--color-bg);
 }
 
 .grid {

@@ -1,3 +1,7 @@
+.work {
+  background: linear-gradient(180deg, var(--color-bg-alt) 0%, #0a1120 100%);
+}
+
 .filters {
   display: flex;
   gap: 12px;
