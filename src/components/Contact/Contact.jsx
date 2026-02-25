@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import emailjs from '@emailjs/browser'
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import styles from './Contact.module.css'
@@ -16,20 +17,36 @@ function Contact() {
     subject: '',
     message: '',
   })
+  const [status, setStatus] = useState('idle')
   const revealRef = useScrollReveal()
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const mailtoLink = `mailto:hudaib@example.com?subject=${encodeURIComponent(
-      form.subject
-    )}&body=${encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
-    )}`
-    window.open(mailtoLink, '_self')
+    setStatus('sending')
+
+    try {
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          from_name: form.name,
+          from_email: form.email,
+          subject: form.subject,
+          message: form.message,
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      )
+      setStatus('success')
+      setForm({ name: '', email: '', subject: '', message: '' })
+      setTimeout(() => setStatus('idle'), 5000)
+    } catch {
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 5000)
+    }
   }
 
   return (
@@ -110,9 +127,25 @@ function Contact() {
                 className={styles.textarea}
               />
             </div>
-            <button type="submit" className={styles.submitBtn}>
-              Send Message
+
+            <button
+              type="submit"
+              className={`${styles.submitBtn} ${status === 'sending' ? styles.sending : ''}`}
+              disabled={status === 'sending'}
+            >
+              {status === 'sending' ? 'Sending...' : 'Send Message'}
             </button>
+
+            {status === 'success' && (
+              <p className={`${styles.statusMsg} ${styles.success}`}>
+                Message sent successfully! I'll get back to you soon.
+              </p>
+            )}
+            {status === 'error' && (
+              <p className={`${styles.statusMsg} ${styles.error}`}>
+                Something went wrong. Please try again or email me directly.
+              </p>
+            )}
           </form>
         </div>
       </div>
